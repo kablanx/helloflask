@@ -11,7 +11,7 @@ variables:
   azureServiceConnection: 'sebitaconnection'
   resourceGroupName: 'sebitabicep'
   location: 'westeurope'
-  templateFile: 'main.bicep'
+  templateFile: 'bicep/main.bicep'
 pool:
   vmImage: $(vmImageName)
 steps:
