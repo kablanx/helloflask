@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.11.1.770",
+      "templateHash": "727282437520744609"
+    }
+  },
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "resourceGroupLocation": {
+      "type": "string"
+    },
+    "resourceGroupService": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-01-01",
+      "name": "[parameters('resourceGroupName')]",
+      "location": "[parameters('resourceGroupLocation')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[parameters('resourceGroupService')]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "locationApp": {
+            "value": "[parameters('resourceGroupLocation')]"
+          },
+          "nameappserviceplan": {
+            "value": "[parameters('resourceGroupService')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "15578445034050622531"
+            }
+          },
+          "parameters": {
+            "locationApp": {
+              "type": "string"
+            },
+            "nameappserviceplan": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}service', parameters('nameappserviceplan'))]",
+              "location": "[parameters('locationApp')]",
+              "sku": {
+                "name": "F1",
+                "capacity": 1
+              },
+              "kind": "linux"
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2021-01-15",
+              "name": "[format('{0}web', parameters('nameappserviceplan'))]",
+              "location": "[parameters('locationApp')]",
+              "tags": {
+                "[format('hidden-related:{0}/providers/Microsoft.Web/serverfarms/appServicePlan', resourceGroup().id)]": "Resource"
+              },
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('{0}service', parameters('nameappserviceplan')))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', format('{0}service', parameters('nameappserviceplan')))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
+    }
+  ]
+}
