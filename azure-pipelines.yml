@@ -8,8 +8,8 @@ trigger:
 name: Deploy Bicep files
 variables:
   vmImageName: 'ubuntu-latest'
-  azureServiceConnection: 'kablanx'
-  resourceGroupName: 'sebitaBicep'
+  azureServiceConnection: 'sebitaconnection'
+  resourceGroupName: 'sebitabicep'
   location: 'westeurope'
   templateFile: 'main.bicep'
 pool:
